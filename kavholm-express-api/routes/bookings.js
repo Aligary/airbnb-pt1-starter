@@ -42,4 +42,21 @@ router.get(
   }
 )
 
+router.post(
+  "/listings/:listingId/",
+  security.requireAuthenticatedUser,
+  permissions.authedUserIsListingOwner,
+  async (req, res, next) => {
+    try {
+      // list all bookings for a single listing
+      const { listing, user } = res.locals
+      const newBooking = req.body
+      const booking = await Booking.createBooking(newBooking, listing, user)
+      return res.status(201).json({ booking })
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
 module.exports = router
